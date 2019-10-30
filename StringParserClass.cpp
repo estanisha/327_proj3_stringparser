@@ -87,7 +87,14 @@ void StringParserClass::cleanup() {
 //ERROR_TAGS_NULL if either pStart or pEnd is null
 int StringParserClass::findTag(char *pTagToLookFor, char *&pStart,
 		char *&pEnd) {
+	bool found = false;
 
+	if (pStartTag == NULL || pEndTag == NULL) {
+		return ERROR_TAGS_NULL;
+	}
+	if (!found & pEnd == 0) {
+		return FAIL;
+	}
 
 }
 
