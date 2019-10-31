@@ -41,12 +41,13 @@ int StringParserClass::setTags(const char *pStart, const char *pEnd) {
 	if (pStart == NULL || pEnd == NULL) {
 		return ERROR_TAGS_NULL;
 	}
-	pStartTag = new char[strlen(pStart)];
-	pEndTag = new char[strlen(pEnd)];
+	pStartTag = new char[strlen(pStart) + 1];
+	pEndTag = new char[strlen(pEnd) + 1];
 
 	strncpy(pStartTag, pStart, strlen(pStart));
 	strncpy(pEndTag, pEnd, strlen(pEnd));
 	areTagsSet = true;
+
 	return SUCCESS;
 
 }
@@ -61,6 +62,7 @@ int StringParserClass::setTags(const char *pStart, const char *pEnd) {
 int StringParserClass::getDataBetweenTags(char *pDataToSearchThru,
 		std::vector<std::string> &myVector) {
 	myVector.clear();
+	std::string ofstuff = "";
 
 	if (pStartTag == NULL || pEndTag == NULL) {
 		return ERROR_TAGS_NULL;
@@ -70,8 +72,30 @@ int StringParserClass::getDataBetweenTags(char *pDataToSearchThru,
 		return ERROR_DATA_NULL;
 	}
 
-	for (int i = 0; i < myVector.size(); i++) {
-		return SUCCESS;
+	int size = strlen(pDataToSearchThru);
+	char *blh = pDataToSearchThru;
+	char *grr = pDataToSearchThru + size;
+	char *oof = pDataToSearchThru;
+	char *bet = pDataToSearchThru + size;
+
+	while (findTag(pStartTag, pDataToSearchThru, grr) == SUCCESS) {
+		if (findTag(pEndTag, oof, bet) == SUCCESS) {
+			while (grr != oof) {
+				ofstuff = ofstuff + *grr;
+				grr++;
+			}
+			myVector.push_back(ofstuff);
+			pDataToSearchThru = bet;
+			size = strlen(pDataToSearchThru);
+			ofstuff = "";
+			grr = pDataToSearchThru + size;
+			bet = pDataToSearchThru + size;
+			oof = pDataToSearchThru;
+			blh = pDataToSearchThru;
+
+		} else {
+			return SUCCESS;
+		}
 	}
 
 	return SUCCESS;
@@ -89,11 +113,27 @@ int StringParserClass::findTag(char *pTagToLookFor, char *&pStart,
 		char *&pEnd) {
 	bool found = false;
 
-	if (pStartTag == NULL || pEndTag == NULL) {
+	if (pStart == NULL || pEnd == NULL) {
 		return ERROR_TAGS_NULL;
 	}
-	if (!found & pEnd == 0) {
+
+	if (pStartTag == NULL & pEndTag == NULL) {
 		return FAIL;
+	}
+	int lookfor = strlen(pTagToLookFor);
+	unsigned int thisthing = strlen(pStart);
+
+	char *len = new char[thisthing];
+	strncpy(len, pStart, lookfor);
+
+	for (int i = 0; i < strlen(len); i++) {
+		if (*len + i == pTagToLookFor[0]) {
+			if (strncmp(len, pTagToLookFor, lookfor) == 0) {
+				pStart = len + i;
+				pEnd = len + i + lookfor - 1;
+				return SUCCESS;
+			}
+		}
 	}
 
 }
