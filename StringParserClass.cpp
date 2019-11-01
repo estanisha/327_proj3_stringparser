@@ -20,8 +20,8 @@ bool areTagsSet;
 
 //dont forget to initialize member variables
 StringParserClass::StringParserClass(void) {
-	pStartTag = "";
-	pEndTag = "";
+	pStartTag = NULL;
+	pEndTag = NULL;
 	areTagsSet = false;
 }
 
@@ -64,7 +64,8 @@ int StringParserClass::getDataBetweenTags(char *pDataToSearchThru,
 	myVector.clear();
 	std::string ofstuff = "";
 
-	if (pStartTag == NULL || pEndTag == NULL) {
+	if (pStartTag == NULL || pEndTag == NULL || pStartTag == 0
+			|| pEndTag == 0) {
 		return ERROR_TAGS_NULL;
 	}
 
@@ -75,12 +76,11 @@ int StringParserClass::getDataBetweenTags(char *pDataToSearchThru,
 	int size = strlen(pDataToSearchThru);
 	char *blh = pDataToSearchThru;
 	char *grr = pDataToSearchThru + size;
-	char *oof = pDataToSearchThru;
 	char *bet = pDataToSearchThru + size;
 
 	while (findTag(pStartTag, pDataToSearchThru, grr) == SUCCESS) {
-		if (findTag(pEndTag, oof, bet) == SUCCESS) {
-			while (grr != oof) {
+		if (findTag(pEndTag, blh, bet) == SUCCESS) {
+			while (grr != blh) {
 				ofstuff = ofstuff + *grr;
 				grr++;
 			}
@@ -90,7 +90,6 @@ int StringParserClass::getDataBetweenTags(char *pDataToSearchThru,
 			ofstuff = "";
 			grr = pDataToSearchThru + size;
 			bet = pDataToSearchThru + size;
-			oof = pDataToSearchThru;
 			blh = pDataToSearchThru;
 
 		} else {
@@ -121,7 +120,7 @@ int StringParserClass::findTag(char *pTagToLookFor, char *&pStart,
 		return FAIL;
 	}
 	int lookfor = strlen(pTagToLookFor);
-	unsigned int thisthing = strlen(pStart);
+	int thisthing = strlen(pStart);
 
 	char *len = new char[thisthing];
 	strncpy(len, pStart, lookfor);
@@ -130,11 +129,12 @@ int StringParserClass::findTag(char *pTagToLookFor, char *&pStart,
 		if (*len + i == pTagToLookFor[0]) {
 			if (strncmp(len, pTagToLookFor, lookfor) == 0) {
 				pStart = len + i;
-				pEnd = len + i + lookfor - 1;
+				pEnd = pStart + lookfor - 1;
 				return SUCCESS;
 			}
 		}
 	}
+	return FAIL;
 
 }
 
